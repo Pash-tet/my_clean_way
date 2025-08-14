@@ -1,0 +1,106 @@
+<script lang="ts">
+  import { useForm } from "@inertiajs/svelte"
+  import { LoaderCircle } from "@lucide/svelte"
+
+  import InputError from "@/components/input-error.svelte"
+  import TextLink from "@/components/text-link.svelte"
+  import { Button } from "@/components/ui/button"
+  import { Input } from "@/components/ui/input"
+  import { Label } from "@/components/ui/label"
+  import AuthBase from "@/layouts/auth-layout.svelte"
+  import { signInPath, signUpPath } from "@/routes"
+
+  const form = useForm({
+    name: "",
+    email: "",
+    password: "",
+    password_confirmation: "",
+  })
+
+  const submit = (e: Event) => {
+    e.preventDefault()
+
+    $form.post(signUpPath(), {
+      onFinish: () => $form.reset("password", "password_confirmation"),
+    })
+  }
+</script>
+
+<svelte:head>
+  <title>Register</title>
+</svelte:head>
+
+<AuthBase title="Регистрация" description="Заполните поля чтобы создать аккаунт">
+  <form onsubmit={submit} class="flex flex-col gap-6">
+    <div class="grid gap-6">
+      <div class="grid gap-2">
+        <Label for="name">Имя</Label>
+        <Input
+          id="name"
+          type="text"
+          required
+          autofocus
+          tabindex={1}
+          autocomplete="name"
+          bind:value={$form.name}
+          placeholder="Full name"
+        />
+        <InputError message={$form.errors.name} />
+      </div>
+
+      <div class="grid gap-2">
+        <Label for="email">Email</Label>
+        <Input
+          id="email"
+          type="email"
+          required
+          tabindex={2}
+          autocomplete="email"
+          bind:value={$form.email}
+          placeholder="email@example.com"
+        />
+        <InputError message={$form.errors.email} />
+      </div>
+
+      <div class="grid gap-2">
+        <Label for="password">Пароль</Label>
+        <Input
+          id="password"
+          type="password"
+          required
+          tabindex={3}
+          autocomplete="new-password"
+          bind:value={$form.password}
+          placeholder="Пароль"
+        />
+        <InputError message={$form.errors.password} />
+      </div>
+
+      <div class="grid gap-2">
+        <Label for="password_confirmation">Подтверждение пароля</Label>
+        <Input
+          id="password_confirmation"
+          type="password"
+          required
+          tabindex={4}
+          autocomplete="new-password"
+          bind:value={$form.password_confirmation}
+          placeholder="Подтверждение пароля"
+        />
+        <InputError message={$form.errors.password_confirmation} />
+      </div>
+
+      <Button type="submit" class="mt-2 w-full" tabindex={5} disabled={$form.processing}>
+        {#if $form.processing}
+          <LoaderCircle class="h-4 w-4 animate-spin" />
+        {/if}
+        Зарегистрироваться
+      </Button>
+    </div>
+
+    <div class="text-muted-foreground text-center text-sm">
+      Уже есть аккаунт?
+      <TextLink href={signInPath()} class="underline underline-offset-4" tabindex={6}>Войти</TextLink>
+    </div>
+  </form>
+</AuthBase>
